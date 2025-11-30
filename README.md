@@ -1,123 +1,146 @@
-# READ_ME
-### Library Management System (PostgreSQL + FastAPI)
+# README
 
-This document explains how to properly use Git for this project.
+## Library Management System  
+**PostgreSQL + SQLAlchemy + FastAPI + Full CRUD + Tests + Swagger UI**
 
-## 1. Initial Setup (One-time only)
+A clean, production-ready backend API for managing a library (Authors & Books) with:
+- PostgreSQL (via Docker)
+- SQLAlchemy 2.0+ ORM
+- FastAPI (automatic interactive docs)
+- Complete CRUD operations
+- Professional testing with `pytest`
+- In-memory SQLite for fast, isolated tests
+
+---
+
+#### Live Demo
+After starting:  
+- **Swagger UI**: http://127.0.0.1:8000/docs  
+- **ReDoc**: http://127.0.0.1:8000/redoc
+
+---
+
+#### Features
+- Full CRUD for `Author` and `Book`
+- One-to-Many relationship (Author → Books)
+- Automatic OpenAPI documentation (Swagger + ReDoc)
+- Dependency injection with `Depends(get_db)`
+- Clean separation: `database.py`, `models.py`, `main.py`
+- Professional test suite using in-memory SQLite
+- Dockerized PostgreSQL (no local install needed)
+
+---
+
+#### Project Structure
+```
+postgreslib/
+├── .venv/                  # (ignored)
+├── tests/                  ← Full test suite
+│   ├── test_database.py    ← Test DB setup (SQLite in-memory)
+│   └── test_main.py        ← All API endpoint tests
+├── database.py             ← SQLAlchemy engine & session
+├── models.py               ← Author & Book ORM models
+├── main.py                 ← FastAPI app with full CRUD
+├── docker-compose.yml      ← PostgreSQL container
+├── requirements.txt        ← (optional) pin dependencies
+├── pytest.ini              ← Fixes test imports
+└── README.md               ← This file
+```
+
+---
+
+#### Quick Start
+
+##### 1. Clone & Enter Project
 ```bash
-# Clone the repository
 git clone https://github.com/your-username/postgreslib.git
 cd postgreslib
+```
 
-# Create and activate virtual environment
+##### 2. Create Virtual Environment
+```bash
 python -m venv .venv
 .\.venv\Scripts\activate        # Windows
 # source .venv/bin/activate     # macOS/Linux
-
-# Install dependencies
-pip install sqlalchemy psycopg2-binary fastapi uvicorn pydantic
 ```
 
-## 2. Daily Workflow (Every time you work)
+##### 3. Install Dependencies
+```bash
+pip install sqlalchemy psycopg2-binary fastapi uvicorn pydantic pytest httpx
+```
 
-### Step 1: Always start fresh
+##### 4. Start PostgreSQL (Docker)
+```bash
+docker-compose up -d
+```
+
+##### 5. Run the API
+```bash
+uvicorn main:app --reload
+```
+
+→ Open http://127.0.0.1:8000/docs and play with the API!
+
+---
+
+#### Run Tests
+```bash
+python -m pytest -v
+# or just: pytest -v
+```
+
+All 10+ tests use an in-memory SQLite database → super fast and safe.  
+Tests cover:
+- Create, Read, Update, Delete for Authors & Books
+- Relationship handling (`author_name` in book responses)
+- 404 error handling
+- Full isolation (DB resets between tests)
+
+---
+
+#### API Endpoints (Auto-documented)
+
+| Method | Endpoint             | Description                   |
+|--------|----------------------|-------------------------------|
+| POST   | `/authors/`          | Create author                 |
+| GET    | `/authors/`          | List all authors              |
+| GET    | `/authors/{id}`      | Get one author                |
+| PUT    | `/authors/{id}`      | Update author                 |
+| DELETE | `/authors/{id}`      | Delete author                 |
+| POST   | `/books/`            | Create book (needs author_id) |
+| GET    | `/books/`            | List all books + author name  |
+| GET    | `/books/{id}`        | Get one book                  |
+| PUT    | `/books/{id}`        | Update book                   |
+| DELETE | `/books/{id}`        | Delete book                   |
+
+---
+
+#### Git Workflow
+Always:
 ```bash
 git pull origin main
-```
-
-### Step 2: Create a new branch for your work
-```bash
 git checkout -b feature/your-feature-name
-# Examples:
-# git checkout -b feature/add-book-validation
-# git checkout -b fix/author-delete-bug
-# git checkout -b docs/update-readme
-```
-
-### Step 3: Do your work → Stage → Commit
-```bash
+# ... make changes
 git add .
-git commit -m "feat: add full CRUD for books with validation"
-# Use conventional commits (recommended):
-#   feat:     new feature
-#   fix:      bug fix
-#   docs:     documentation
-#   refactor: code improvement
-#   test:     adding tests
-#   chore:    maintenance
+git commit -m "feat: add X / fix: Y"
+git push origin HEAD
 ```
+→ Open a Pull Request on GitHub
 
-### Step 4: Push your branch
-```bash
-git push origin feature/your-feature-name
+Use conventional commits: `feat:`, `fix:`, `test:`, `docs:`, `refactor:`, `chore:`
+
+---
+
+#### .gitignore (already set up)
+Ignores:
+- `.venv/`
+- `__pycache__/`
+- `.idea/`, `.vscode/`
+- logs, OS files
+
+---
+
+
+
+Replace your old README with this one — your repo will instantly level up!
 ```
-
-### Step 5: Create a Pull Request on GitHub
-Go to your repo → You’ll see a banner → Click “Compare & pull request”
-
-## 3. Recommended .gitignore
-Create `.gitignore` in project root:
-```gitignore
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.pyo
-*.pyd
-.Python
-env/
-venv/
-.venv/
-ENV/
-env.bak/
-venv.bak/
-
-# Virtual Environment
-.venv/
-venv/
-
-# FastAPI / Uvicorn
-*.log
-uvicorn.log
-
-# Docker
-docker-compose.override.yml
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# OS
-.DS_Store
-Thumbs.db
-```
-
-## 4. Branch Naming Convention
-```
-feature/short-description          → new features
-fix/short-description              → bug fixes
-docs/short-description             → documentation
-refactor/short-description        → code cleanup
-test/add-unit-tests                → tests
-```
-
-## 5. Keep Main Branch Always Working
-- Never commit broken code to `main`
-- All changes go through Pull Requests
-- At least 1 review before merging (even if solo → self-review)
-
-## 6. Quick Commands Cheat Sheet
-```bash
-git status                          # See what changed
-git add .                           # Stage all
-git commit -m "message"             # Commit
-git pull origin main                # Update local main
-git checkout main                   # Switch to main
-git branch                          # List branches
-git push origin HEAD                # Push current branch
-git log --oneline                   # See commit history
-```
-
-**_README_** id going to get update soon.
