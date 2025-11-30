@@ -140,7 +140,3 @@ Ignores:
 
 ---
 
-
-
-Replace your old README with this one — your repo will instantly level up!
-```
